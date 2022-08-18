@@ -15,14 +15,14 @@
 
   tasks:
   - name: Create reports directory if it does not exist
-    ansible.builtin.file:
+    file:
       path: "{{ output_path }}"
       state: directory
       mode: '0755'
     delegate_to: localhost
 
   - name: Collect facts
-    ansible.builtin.setup:
+    setup:
 
   - name: Register OpenStack Distribution
     shell: "cat /etc/openstack-release | grep DISTRIB_ID | sed -e 's/.*=//' | xargs"
@@ -97,7 +97,7 @@
     lineinfile:
       path: "{{ output_path }}/{{ filename }}"
       state: absent
-      regex: '^\s*$'
+      regexp: '^\s*$'
     delegate_to: localhost
 
   - debug:
