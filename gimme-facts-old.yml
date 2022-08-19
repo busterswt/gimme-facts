@@ -71,7 +71,7 @@
     lineinfile:
       dest: "{{ output_path }}/{{ filename }}"
       line:
-        hostname,kernel,distribution,distribution_release,distribution_version,bios_vendor,board_name,memtotal_mb,processor,architecture,processors_count,processor_cores,processor_nproc,mechanism_drivers,total_instance_count,openstack_distrib,openstack_release,openstack_codename
+        hostname,kernel,distribution,distribution_release,distribution_version,bios_vendor,board_name,memtotal_mb,processor,architecture,processors_count,processor_cores,total_cores,processor_nproc,mechanism_drivers,total_instance_count,openstack_distrib,openstack_release,openstack_codename
       create: yes
       state: present
     run_once: yes
@@ -81,7 +81,7 @@
   - name: CSV - Get host facts
     set_fact:
       csv_tmp: >
-        {{ inventory_hostname }},{{ ansible_kernel }},{{ ansible_distribution }},{{ ansible_distribution_release }},{{ ansible_distribution_version }},{{ ansible_bios_vendor | default('N/A') }},{{ ansible_board_name | default('N/A') }},{{ (ansible_memtotal_mb / 1024.0) | round(2, 'floor') }},{{ cpu_model.stdout }},{{ ansible_architecture }},{{ ansible_processor_count }},{{ ansible_processor_cores }},{{ ansible_processor_nproc | default('N/A') }},[{{ mechanism_drivers.stdout }}],{{ instance_count }},{{ openstack_distrib.stdout }},{{ openstack_release.stdout | default('UNK') }},{{ openstack_codename.stdout }}
+        {{ inventory_hostname }},{{ ansible_kernel }},{{ ansible_distribution }},{{ ansible_distribution_release }},{{ ansible_distribution_version }},{{ ansible_bios_vendor | default('N/A') }},{{ ansible_board_name | default('N/A') }},{{ (ansible_memtotal_mb / 1024.0) | round(2, 'floor') }},{{ cpu_model.stdout }},{{ ansible_architecture }},{{ ansible_processor_count }},{{ ansible_processor_cores }},{{ ansible_processor_count * ansible_processor_cores }},{{ ansible_processor_nproc | default('N/A') }},[{{ mechanism_drivers.stdout }}],{{ instance_count }},{{ openstack_distrib.stdout }},{{ openstack_release.stdout | default('UNK') }},{{ openstack_codename.stdout }}
 
   - name: CSV - Write information into .csv file
     lineinfile:
