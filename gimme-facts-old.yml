@@ -90,8 +90,8 @@
       line: "{{ csv_tmp }}"
     delegate_to: localhost
 
-  - debug:
-      msg: "hostname is {{ ansible_hostname }}"
+#  - debug:
+#      msg: "hostname is {{ ansible_hostname }}"
 
   - name: CSV - Blank lines removal
     lineinfile:
