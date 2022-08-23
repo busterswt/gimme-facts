@@ -7,11 +7,11 @@
     - lxc_hosts
     - controller_hosts
     - compute_hosts
-#  gather_facts: yes
 
   vars:
     output_path: "/root/gimme_reports"
     filename: "cloud_report_{{ date }}.csv"
+    instance_count: 0
 
   tasks:
   - name: Create reports directory if it does not exist
@@ -20,6 +20,7 @@
       state: directory
       mode: '0755'
     delegate_to: localhost
+    run_once: true
 
   - name: Collect facts
     setup:
@@ -60,9 +61,6 @@
 #  - debug:
 #      msg: "total instances: {{ instance_count.query_result[0][0]['count(*)'] }}"
 
-  - name: Set instance count (temp fix)
-    set_fact: instance_count="0"
-
   - name: CSV - Generate output filename
     set_fact: date="{{lookup('pipe','date +%Y%m%d%H%M%S')}}"
     run_once: true
@@ -74,7 +72,7 @@
         hostname,kernel,distribution,distribution_release,distribution_version,bios_vendor,board_name,memtotal_mb,processor,architecture,processors_count,processor_cores,total_cores,processor_nproc,mechanism_drivers,total_instance_count,openstack_distrib,openstack_release,openstack_codename
       create: yes
       state: present
-    run_once: yes
+    run_once: true
     delegate_to: localhost
 
 # NOTE: figure out why ansible_hostname isn't working here
@@ -99,7 +97,9 @@
       state: absent
       regexp: '^\s*$'
     delegate_to: localhost
+    run_once: true
 
   - debug:
       msg: "Output file is {{ output_path }}/{{ filename }}"
     delegate_to: localhost
+    run_once: true
