@@ -1,6 +1,5 @@
 ---
-# This playbook gathers facts from hosts in an environment for the 
-purposes
+# This playbook gathers facts from hosts in an environment for the purposes
 # of the user survey and other useful bits for RXT.
 
 - name: Write rax facts into a csv file
@@ -38,15 +37,13 @@ purposes
     register: openstack_codename
 
   - name: Register CPU model name
-    shell: "cat /proc/cpuinfo | grep 'model name' | sort -u -k1 | sed -e 
-'s/.*://' | xargs"
+    shell: "cat /proc/cpuinfo | grep 'model name' | sort -u -k1 | sed -e 's/.*://' | xargs"
     register: cpu_model
 
 # Grab the mechanism drivers, change from comma-delimited
 # to colon-delimited to avoid CSV issues
 #  - name: Register Neutron Plugin
-#    shell: "cat /etc/neutron/plugins/ml2/ml2_conf.ini | grep 
-mechanism_drivers | sed -e 's/.*=//' | sed s/,/:/g | xargs"
+#    shell: "cat /etc/neutron/plugins/ml2/ml2_conf.ini | grep mechanism_drivers | sed -e 's/.*=//' | sed s/,/:/g | xargs"
 #    register: mechanism_drivers
 
 # NOTE: may need to adapt to mysql_query for older environments
@@ -61,8 +58,7 @@ mechanism_drivers | sed -e 's/.*=//' | sed s/,/:/g | xargs"
 #    register: instance_count
 
 #  - debug:
-#      msg: "total instances: {{ 
-instance_count.query_result[0][0]['count(*)'] }}"
+#      msg: "total instances: {{ instance_count.query_result[0][0]['count(*)'] }}"
 
   - name: CSV - Generate output filename
     set_fact: date="{{lookup('pipe','date +%Y%m%d%H%M%S')}}"
@@ -72,8 +68,7 @@ instance_count.query_result[0][0]['count(*)'] }}"
     lineinfile:
       dest: "{{ output_path }}/{{ filename }}"
       line:
-        
-hostname,kernel,distribution,distribution_release,distribution_version,bios_vendor,board_name,memtotal_mb,processor,architecture,processors_count,processor_cores,total_cores,processor_nproc,mechanism_drivers,total_instance_count,openstack_distrib,openstack_release,openstack_codename
+        hostname,kernel,distribution,distribution_release,distribution_version,bios_vendor,board_name,memtotal_mb,processor,architecture,processors_count,processor_cores,total_cores,processor_nproc,mechanism_drivers,total_instance_count,openstack_distrib,openstack_release,openstack_codename
       create: yes
       state: present
     run_once: true
@@ -83,17 +78,7 @@ hostname,kernel,distribution,distribution_release,distribution_version,bios_vend
   - name: CSV - Get host facts
     set_fact:
       csv_tmp: >
-        {{ inventory_hostname }},{{ ansible_kernel }},{{ 
-ansible_distribution }},{{ ansible_distribution_release }},{{ 
-ansible_distribution_version }},{{ ansible_bios_vendor | default('N/A') 
-}},{{ ansible_board_name | default('N/A') }},{{ (ansible_memtotal_mb / 
-1024.0) | round(2, 'floor') }},{{ cpu_model.stdout }},{{ 
-ansible_architecture }},{{ ansible_processor_count }},{{ 
-ansible_processor_cores }},{{ ansible_processor_count * 
-ansible_processor_cores }},{{ ansible_processor_nproc | default('N/A') 
-}},[{{ mechanism_drivers.stdout | default('UNK') }}],{{ instance_count 
-}},{{ openstack_distrib.stdout }},{{ openstack_release.stdout | 
-default('UNK') }},{{ openstack_codename.stdout }}
+        {{ inventory_hostname }},{{ ansible_kernel }},{{ ansible_distribution }},{{ ansible_distribution_release }},{{ ansible_distribution_version }},{{ ansible_bios_vendor | default('N/A') }},{{ ansible_board_name | default('N/A') }},{{ (ansible_memtotal_mb / 1024.0) | round(2, 'floor') }},{{ cpu_model.stdout }},{{ ansible_architecture }},{{ ansible_processor_count }},{{ ansible_processor_cores }},{{ ansible_processor_count * ansible_processor_cores }},{{ ansible_processor_nproc | default('N/A') }},[{{ mechanism_drivers.stdout | default('UNK') }}],{{ instance_count }},{{ openstack_distrib.stdout }},{{ openstack_release.stdout | default('UNK') }},{{ openstack_codename.stdout }}
 
   - name: CSV - Write information into .csv file
     lineinfile:
